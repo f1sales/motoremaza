@@ -1,0 +1,60 @@
+GIT
+  remote: https://github.com/f1sales/f1sales_helpers.git
+  revision: 3c3f8eb9679b4e6296f8929fb8a20813936b8205
+  branch: master
+  specs:
+    f1sales_helpers (0.1.0)
+
+GIT
+  remote: https://github.com/marciok/f1sales_custom-email.git
+  revision: 6cad18ba9095284c15da97d7afd50aa47cc711a8
+  branch: master
+  specs:
+    f1sales_custom-email (0.1.0)
+
+GIT
+  remote: https://github.com/marciok/f1sales_custom-hooks.git
+  revision: 6e00712d0fdaf083ea4dab8b621c247dd7dd1142
+  branch: master
+  specs:
+    f1sales_custom-hooks (0.1.2)
+
+PATH
+  remote: .
+  specs:
+    motoremaza (0.1.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    byebug (11.1.3)
+    diff-lcs (1.5.0)
+    rake (13.0.6)
+    rspec (3.11.0)
+      rspec-core (~> 3.11.0)
+      rspec-expectations (~> 3.11.0)
+      rspec-mocks (~> 3.11.0)
+    rspec-core (3.11.0)
+      rspec-support (~> 3.11.0)
+    rspec-expectations (3.11.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.11.0)
+    rspec-mocks (3.11.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.11.0)
+    rspec-support (3.11.0)
+
+PLATFORMS
+  x86_64-linux
+
+DEPENDENCIES
+  byebug
+  f1sales_custom-email!
+  f1sales_custom-hooks!
+  f1sales_helpers!
+  motoremaza!
+  rake (~> 13.0)
+  rspec (~> 3.0)
+
+BUNDLED WITH
+   2.3.10

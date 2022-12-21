@@ -26,10 +26,13 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
     end
 
     context 'when it comes by email' do
-      before { lead.attachments = ['https://myhonda.force.com/leads/s/lead/00Q4M'] }
+      before do
+        lead.attachments = ['https://myhonda.force.com/leads/s/lead/00Q4M']
+        source.name = 'Email da Honda'
+      end
 
       it 'returns nil source' do
-        expect(switch_source).to be_nil
+        expect(switch_source).to eq('myHonda')
       end
     end
   end

@@ -10,7 +10,7 @@ module Motoremaza
 
   class F1SalesCustom::Hooks::Lead
     def self.switch_source(lead)
-      return nil unless lead.attachments.empty?
+      return 'myHonda' unless lead.attachments.empty?
 
       lead.source.name
     end

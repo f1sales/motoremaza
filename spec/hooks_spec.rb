@@ -29,7 +29,7 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
       before { lead.attachments = ['https://myhonda.force.com/leads/s/lead/00Q4M'] }
 
       it 'returns nil source' do
-        expect(switch_source).to eq('myHonda')
+        expect(switch_source).to be_nil
       end
     end
   end

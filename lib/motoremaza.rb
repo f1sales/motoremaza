@@ -25,6 +25,12 @@ module Motoremaza
 
       return nil if product_name['fit']
 
+      return nil if product_name['agendamento']
+
+      return nil if product_name['manutenção']
+
+      return nil if product_name['seguro moto']
+
       lead.source.name
     end
   end

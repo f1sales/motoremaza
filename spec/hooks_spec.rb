@@ -94,5 +94,31 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
         end
       end
     end
+
+    context 'when services come in product name' do
+      context 'when is agendamento' do
+        before { product.name = 'Agendamento de Serviço' }
+
+        it 'return nil source' do
+          expect(switch_source).to be_nil
+        end
+      end
+
+      context 'when is manutenção' do
+        before { product.name = 'Manutenção Periódica' }
+
+        it 'return nil source' do
+          expect(switch_source).to be_nil
+        end
+      end
+
+      context 'when is manutenção' do
+        before { product.name = 'Seguro Moto Consumidor' }
+
+        it 'return nil source' do
+          expect(switch_source).to be_nil
+        end
+      end
+    end
   end
 end

@@ -6,6 +6,7 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
       lead = OpenStruct.new
       lead.source = source
       lead.attachments = []
+      lead.product = product
 
       lead
     end
@@ -15,6 +16,13 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
       source.name = 'myHonda'
 
       source
+    end
+
+    let(:product) do
+      product = OpenStruct.new
+      product.name = ''
+
+      product
     end
 
     let(:switch_source) { described_class.switch_source(lead) }
@@ -32,8 +40,58 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
       end
 
       it 'returns nil source' do
-        # expect(switch_source).to be_nil
-        expect(switch_source).to eq('Email da Honda')
+        expect(switch_source).to be_nil
+        # expect(switch_source).to eq('Email da Honda')
+      end
+    end
+
+    context 'Needs to filter cars' do
+      context 'when is new city' do
+        before { product.name = 'NEW CITY HATCHBACK - Touring - Automático' }
+
+        it 'return nil source' do
+          expect(switch_source).to be_nil
+        end
+      end
+
+      context 'when is hr-v' do
+        before { product.name = 'NEW HR-V - EXL - Automático' }
+
+        it 'return nil source' do
+          expect(switch_source).to be_nil
+        end
+      end
+
+      context 'when is cr-v' do
+        before { product.name = 'NEW CR-V - EXL - Automático' }
+
+        it 'return nil source' do
+          expect(switch_source).to be_nil
+        end
+      end
+
+      context 'when is wr-v' do
+        before { product.name = 'NEW WR-V - EXL - Automático' }
+
+        it 'return nil source' do
+          expect(switch_source).to be_nil
+        end
+      end
+
+      context 'when is civic' do
+        before { product.name = 'Honda Civic' }
+
+        it 'return nil source' do
+          expect(switch_source).to be_nil
+        end
+      end
+
+      context 'when is fit' do
+        before { product.name = 'Honda FIT' }
+
+        it 'return nil source' do
+          expect(switch_source).to be_nil
+        end
       end
     end
   end

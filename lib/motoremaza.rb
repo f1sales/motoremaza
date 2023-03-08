@@ -11,7 +11,7 @@ module Motoremaza
   class F1SalesCustom::Hooks::Lead
     def self.switch_source(lead)
       product_name = lead.product.name.downcase
-      return nil unless lead.attachments.empty?
+      # return nil unless lead.attachments.empty?
 
       return nil if product_name['hr-v']
 

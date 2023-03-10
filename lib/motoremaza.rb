@@ -12,7 +12,7 @@ module Motoremaza
     def self.switch_source(lead)
       # return nil unless lead.attachments.empty?
 
-      return nil unless lead.description.downcase['remaza']
+      return nil if lead.description.downcase['daitan']
 
       lead.source.name
     end

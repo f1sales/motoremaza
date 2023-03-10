@@ -7,6 +7,7 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
       lead.source = source
       lead.attachments = []
       lead.product = product
+      lead.description = 'REMAZA'
 
       lead
     end
@@ -45,75 +46,9 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
       end
     end
 
-    context 'Needs to filter cars' do
-      context 'when is new city' do
-        before { product.name = 'NEW CITY HATCHBACK - Touring - Automático' }
-
-        it 'return nil source' do
-          expect(switch_source).to be_nil
-        end
-      end
-
-      context 'when is hr-v' do
-        before { product.name = 'NEW HR-V - EXL - Automático' }
-
-        it 'return nil source' do
-          expect(switch_source).to be_nil
-        end
-      end
-
-      context 'when is cr-v' do
-        before { product.name = 'NEW CR-V - EXL - Automático' }
-
-        it 'return nil source' do
-          expect(switch_source).to be_nil
-        end
-      end
-
-      context 'when is wr-v' do
-        before { product.name = 'NEW WR-V - EXL - Automático' }
-
-        it 'return nil source' do
-          expect(switch_source).to be_nil
-        end
-      end
-
-      context 'when is civic' do
-        before { product.name = 'Honda Civic' }
-
-        it 'return nil source' do
-          expect(switch_source).to be_nil
-        end
-      end
-
-      context 'when is fit' do
-        before { product.name = 'Honda FIT' }
-
-        it 'return nil source' do
-          expect(switch_source).to be_nil
-        end
-      end
-    end
-
     context 'when services come in product name' do
       context 'when is agendamento' do
-        before { product.name = 'Agendamento de Serviço' }
-
-        it 'return nil source' do
-          expect(switch_source).to be_nil
-        end
-      end
-
-      context 'when is manutenção' do
-        before { product.name = 'Manutenção Periódica' }
-
-        it 'return nil source' do
-          expect(switch_source).to be_nil
-        end
-      end
-
-      context 'when is manutenção' do
-        before { product.name = 'Seguro Moto Consumidor' }
+        before { lead.description = 'Concessionária: DAITAN - Código: 1015699' }
 
         it 'return nil source' do
           expect(switch_source).to be_nil

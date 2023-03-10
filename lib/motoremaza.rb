@@ -18,7 +18,3 @@ module Motoremaza
     end
   end
 end
-
-kubectl delete pod motoremaza-6cd87cf668-qcmr4
-kubectl delete pod sidekiq-motoremaza-7fb768fcf8-8xrtz
-

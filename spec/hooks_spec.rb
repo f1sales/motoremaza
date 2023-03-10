@@ -7,7 +7,7 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
       lead.source = source
       lead.attachments = []
       lead.product = product
-      lead.description = 'REMAZA'
+      lead.description = 'REMAZA CENTRO'
 
       lead
     end

@@ -46,9 +46,33 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
       end
     end
 
+    context 'when dealership is DAITAN' do
+      before { lead.description = 'Concessionária: DAITAN - Código: 1015699' }
+
+      it 'return nil source' do
+        expect(switch_source).to be_nil
+      end
+    end
+
     context 'when services come in product name' do
-      context 'when is agendamento' do
+      context 'when is Peça' do
         before { lead.description = 'Concessionária: DAITAN - Código: 1015699' }
+
+        it 'return nil source' do
+          expect(switch_source).to be_nil
+        end
+      end
+
+      context 'when is Agendamento de Serviço' do
+        before { product.name = 'Agendamento de Serviço' }
+
+        it 'return nil source' do
+          expect(switch_source).to be_nil
+        end
+      end
+
+      context 'when is Peças' do
+        before { product.name = 'Peças' }
 
         it 'return nil source' do
           expect(switch_source).to be_nil

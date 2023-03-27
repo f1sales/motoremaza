@@ -54,6 +54,14 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
       end
     end
 
+    context 'when descritption contain type Serviços' do
+      before { lead.description = 'Concessionária: REMAZA - Código: 1015699 - Tipo: CS - Serviços e Peças' }
+
+      it 'return nil source' do
+        expect(switch_source).to be_nil
+      end
+    end
+
     context 'when services come in product name' do
       context 'when is Peça' do
         before { lead.description = 'Concessionária: DAITAN - Código: 1015699' }
@@ -73,6 +81,14 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
 
       context 'when is Peças' do
         before { product.name = 'Peças' }
+
+        it 'return nil source' do
+          expect(switch_source).to be_nil
+        end
+      end
+
+      context 'when is Peças' do
+        before { product.name = 'Manutenção Periódica' }
 
         it 'return nil source' do
           expect(switch_source).to be_nil

@@ -9,21 +9,41 @@ module Motoremaza
   class Error < StandardError; end
 
   class F1SalesCustom::Hooks::Lead
-    def self.switch_source(lead)
-      @product_name = lead.product.name.downcase
-      return nil unless lead.attachments.empty?
+    class << self
+      def switch_source(lead)
+        @lead = lead
+        return nil unless lead.attachments.empty?
 
-      return nil if lead.description.downcase['daitan']
+        return nil if unwanted_description
 
-      return nil if unwanted_product
+        return nil if unwanted_product
 
-      lead.source.name
-    end
+        lead.source.name
+      end
 
-    def self.unwanted_product
-      return true if @product_name['peças']
+      private
 
-      return true if @product_name['agendamento de serviço']
+      def product_name
+        @lead.product.name.downcase || ''
+      end
+
+      def description
+        @lead.description.downcase || ''
+      end
+
+      def unwanted_product
+        return true if product_name['peças']
+
+        return true if product_name['agendamento de serviço']
+
+        return true if product_name['manutenção periódica']
+      end
+
+      def unwanted_description
+        return true if description['daitan']
+
+        return true if description['serviço']
+      end
     end
   end
 end

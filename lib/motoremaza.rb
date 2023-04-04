@@ -63,7 +63,7 @@ module Motoremaza
 
       def crm_gold_payload(customer, dealer)
         {
-          'idLead' => @lead.id,
+          'idLead' => @lead.id.to_s,
           'idCRM' => ENV.fetch('CRM_GOLD_ID'),
           'Nome' => customer.name,
           'Email' => customer.email,

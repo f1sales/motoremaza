@@ -6,8 +6,8 @@ gem 'f1sales_helpers', github: 'f1sales/f1sales_helpers', branch: 'master'
 
 gemspec
 
+gem 'http'
 gem 'rake', '~> 13.0'
-
 gem 'rspec', '~> 3.0'
 
 group :development do
@@ -17,4 +17,5 @@ end
 group :test do
   gem 'byebug'
   gem 'faker'
+  gem 'webmock'
 end

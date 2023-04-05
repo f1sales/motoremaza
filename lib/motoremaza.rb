@@ -10,6 +10,9 @@ module Motoremaza
 
   class F1SalesCustom::Hooks::Lead
     class << self
+      INSERTED_CRM_GOLD = '[INSERIDO CRM GOLD EVENTO: event_code]'
+      NOT_INSERTED_CRM_GOLD = '[NAO INSERIDO CRM GOLD]'
+
       def switch_source(lead)
         @lead = lead
         return nil unless lead.attachments.empty?
@@ -18,10 +21,71 @@ module Motoremaza
 
         return nil if unwanted_product
 
+        post_crm_gold
+
         lead.source.name
       end
 
       private
+
+      def post_crm_gold
+        @lead.description = "#{@lead.description} #{NOT_INSERTED_CRM_GOLD}"
+        lead_description = @lead.description
+
+        dealer_name = lead_description.match(/Concessionária: (.*) - Código/)
+        return unless dealer_name
+
+        dealer = parse_dealer(dealer_name)
+        post_lead(dealer)
+      end
+
+      def parse_dealer(dealer_name)
+        dealer_name = dealer_name[1].gsub('REMAZA', '').strip
+        dealer_name = 'SAO BERNARDO' if dealer_name == 'SBC'
+        dealers_list = HTTP.get(ENV.fetch('DEALERS_LIST_URL')).body
+
+        JSON.parse(dealers_list)['Empresas'].detect do |dealer|
+          name_description = dealer['RAZSOC'].scan(/MOTO REMAZA - (.*)/).flatten.first
+          dealer_name == name_description
+        end
+      end
+
+      def post_lead(dealer)
+        customer = @lead.customer
+        lead_payload = crm_gold_payload(customer, dealer)
+        response = HTTP.post(
+          ENV.fetch('CRM_GOLD_URL'),
+          json: lead_payload
+        )
+
+        handle_response(response)
+      end
+
+      def crm_gold_payload(customer, dealer)
+        {
+          'idLead' => @lead.id.to_s,
+          'idCRM' => ENV.fetch('CRM_GOLD_ID'),
+          'Nome' => customer.name,
+          'Email' => customer.email,
+          'Telefone' => customer.phone,
+          'Observacao' => @lead.product.name,
+          'CNPJ_Unidade' => dealer['CNPJ'],
+          'TipoInteresse' => 'Novos'
+        }
+      end
+
+      def handle_response(response)
+        response_body = JSON.parse(response.body)
+        return unless response.code == 200 && response_body['erro'] == false
+
+        update_description(response_body['codEvento'].to_s)
+      end
+
+      def update_description(crm_event_code)
+        crm_inserted_description = INSERTED_CRM_GOLD.gsub('event_code', crm_event_code)
+        @lead.description = @lead.description.gsub(NOT_INSERTED_CRM_GOLD, '').strip
+        @lead.description = "#{@lead.description} #{crm_inserted_description}"
+      end
 
       def product_name
         @lead.product.name.downcase || ''

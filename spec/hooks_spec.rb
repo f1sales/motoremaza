@@ -1,4 +1,6 @@
 require 'ostruct'
+require 'faker'
+require 'webmock/rspec'
 
 RSpec.describe F1SalesCustom::Hooks::Lead do
   context 'when come from myHonda' do
@@ -7,7 +9,9 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
       lead.source = source
       lead.attachments = []
       lead.product = product
+      lead.customer = customer
       lead.description = 'REMAZA CENTRO'
+      lead.id = Faker::Crypto.md5
 
       lead
     end
@@ -15,8 +19,16 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
     let(:source) do
       source = OpenStruct.new
       source.name = 'myHonda'
-
       source
+    end
+
+    let(:customer) do
+      customer = OpenStruct.new
+      customer.name = Faker::Name.name
+      customer.email = Faker::Internet.email
+      customer.phone = Faker::PhoneNumber.phone_number
+
+      customer
     end
 
     let(:product) do
@@ -28,7 +40,217 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
 
     let(:switch_source) { described_class.switch_source(lead) }
 
+    context 'when a dealer name is detected' do
+      let(:dealers_list_json) do
+        {
+          'Empresas' => [
+            {
+              'RAZSOC' => 'PRIMARCA - SAO CAETANO',
+              'CNPJ' => '63078489000134'
+            },
+            {
+              'RAZSOC' => 'PRIMARCA - SAO MIGUEL',
+              'CNPJ' => '63078489001025'
+            },
+            {
+              'RAZSOC' => 'DAITAN - IBIRAPUERA',
+              'CNPJ' => '67375899000289'
+            },
+            {
+              'RAZSOC' => 'MOTO REMAZA - IBIRAPUERA',
+              'CNPJ' => '54267463000143'
+            },
+            {
+              'RAZSOC' => 'MOTO REMAZA - CENTRO',
+              'CNPJ' => '54267463003401'
+            },
+            {
+              'RAZSOC' => 'MOTO REMAZA - SANTANA',
+              'CNPJ' => '54267463001387'
+            },
+            {
+              'RAZSOC' => 'MOTO REMAZA - SAO BERNARDO',
+              'CNPJ' => '54267463001549'
+            },
+            {
+              'RAZSOC' => 'MOTO REMAZA - TATUAPE',
+              'CNPJ' => '54267463001620'
+            },
+            {
+              'RAZSOC' => 'MOTO REMAZA - BUTANTA',
+              'CNPJ' => '54267463001891'
+            },
+            {
+              'RAZSOC' => 'MOTO REMAZA - TABOAO',
+              'CNPJ' => '54267463002006'
+            },
+            {
+              'RAZSOC' => 'MOTO REMAZA - CARRAO',
+              'CNPJ' => '54267463002197'
+            },
+            {
+              'RAZSOC' => 'MOTO REMAZA - IPIRANGA',
+              'CNPJ' => '54267463002510'
+            },
+            {
+              'RAZSOC' => 'MOTO REMAZA - DIADEMA',
+              'CNPJ' => '54267463003088'
+            },
+            {
+              'RAZSOC' => 'MOTO REMAZA - ASSUNCAO',
+              'CNPJ' => '54267463003169'
+            },
+            {
+              'RAZSOC' => 'MOTO REMAZA - RUDGE RAMOS',
+              'CNPJ' => '54267463003240'
+            },
+            {
+              'RAZSOC' => 'MOTO REMAZA - PACAEMBU',
+              'CNPJ' => '54267463003320'
+            }
+          ]
+        }.to_json
+      end
+
+      let(:crm_gold_url) { Faker::Internet.url }
+      let(:dealers_list_url) { Faker::Internet.url }
+      let(:crm_gold_id) { Faker::Crypto.md5 }
+      let(:crm_event_code) { Faker::Number.number(digits: 5) }
+
+      before do
+        allow(ENV)
+          .to receive(:fetch)
+          .with('CRM_GOLD_URL')
+          .and_return(crm_gold_url)
+        allow(ENV)
+          .to receive(:fetch)
+          .with('CRM_GOLD_ID')
+          .and_return(crm_gold_id)
+        allow(ENV)
+          .to receive(:fetch)
+          .with('DEALERS_LIST_URL')
+          .and_return(dealers_list_url)
+      end
+
+      let(:dealers_list_request) do
+        stub_request(
+          :get,
+          dealers_list_url
+        ).to_return(status: 200, body: dealers_list_json, headers: {})
+      end
+
+      context 'when post to CRM Gold is not sucessful' do
+        let(:lead_json) do
+          {
+            'idLead' => lead.id,
+            'idCRM' => crm_gold_id,
+            'Nome' => customer.name,
+            'Email' => customer.email,
+            'Telefone' => customer.phone,
+            'Observacao' => product.name,
+            'CNPJ_Unidade' => '54267463003401',
+            'TipoInteresse' => 'Novos'
+          }.to_json
+        end
+
+        let(:failed_crm_gold) do
+          { 'erro' => true }.to_json
+        end
+
+        let(:crm_gold_request) do
+          stub_request(
+            :post,
+            crm_gold_url
+          ).with(
+            body: lead_json
+          ).to_return(status: 200, body: failed_crm_gold, headers: {})
+        end
+
+        before do
+          crm_gold_request
+          dealers_list_request
+          lead.description = 'Concessionária: REMAZA CENTRO - Código: 1034952 - Tipo: HDA - Motocicletas'
+          switch_source
+        end
+
+        it 'append [NAO INSERIDO CRM GOLD]' do
+          expect(lead.description).to eq('Concessionária: REMAZA CENTRO - Código: 1034952 - Tipo: HDA - Motocicletas [NAO INSERIDO CRM GOLD]')
+        end
+      end
+
+      context 'when post to CRM Gold is sucessful' do
+        let(:crm_gold_request) do
+          stub_request(
+            :post,
+            crm_gold_url
+          ).with(
+            body: lead_json
+          ).to_return(status: 200, body: { 'erro' => false, 'codEvento' => crm_event_code }.to_json, headers: {})
+        end
+
+        context 'when dealership is SBC' do
+          before do
+            crm_gold_request
+            dealers_list_request
+            lead.description = 'Concessionária: REMAZA SBC - Código: 1054953 - Tipo: CNH - Consórcio Hond'
+            switch_source
+          end
+
+          let(:lead_json) do
+            {
+              'idLead' => lead.id,
+              'idCRM' => crm_gold_id,
+              'Nome' => customer.name,
+              'Email' => customer.email,
+              'Telefone' => customer.phone,
+              'Observacao' => product.name,
+              'CNPJ_Unidade' => '54267463001549',
+              'TipoInteresse' => 'Novos'
+            }.to_json
+          end
+
+          it 'insert lead on CRM Gold as SAO BERNADO DO CAMPO' do
+            expect(crm_gold_request).to have_been_made
+          end
+        end
+
+        context 'when dealership is found' do
+          before do
+            crm_gold_request
+            dealers_list_request
+            lead.description = 'Concessionária: REMAZA CENTRO - Código: 1034952 - Tipo: HDA - Motocicletas'
+            switch_source
+          end
+
+          let(:lead_json) do
+            {
+              'idLead' => lead.id,
+              'idCRM' => crm_gold_id,
+              'Nome' => customer.name,
+              'Email' => customer.email,
+              'Telefone' => customer.phone,
+              'Observacao' => product.name,
+              'CNPJ_Unidade' => '54267463003401',
+              'TipoInteresse' => 'Novos'
+            }.to_json
+          end
+
+          it 'insert lead on CRM Gold' do
+            expect(crm_gold_request).to have_been_made
+          end
+
+          it 'append [INSERIDO CRM GOLD]' do
+            expect(lead.description).to eq("Concessionária: REMAZA CENTRO - Código: 1034952 - Tipo: HDA - Motocicletas [INSERIDO CRM GOLD EVENTO: #{crm_event_code}]")
+          end
+        end
+      end
+    end
+
     context 'when it comes by robot' do
+      before do
+        lead.description = ''
+      end
+
       it 'returns source name' do
         expect(switch_source).to eq('myHonda')
       end

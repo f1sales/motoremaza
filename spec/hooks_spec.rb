@@ -192,7 +192,7 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
           before do
             crm_gold_request
             dealers_list_request
-            lead.description = 'Concessionária: REMAZA SBC - Código: 1054953 - Tipo: CNH - Consórcio Hond'
+            lead.description = 'Concessionária: REMAZA SBC; Código: 1054953; Tipo: CNH - Consórcio Hond'
             switch_source
           end
 
@@ -218,7 +218,7 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
           before do
             crm_gold_request
             dealers_list_request
-            lead.description = 'Concessionária: REMAZA CENTRO - Código: 1034952 - Tipo: HDA - Motocicletas'
+            lead.description = 'Concessionária: REMAZA CENTRO; Código: 1634313; Tipo: HDA - Motocicletas'
             switch_source
           end
 
@@ -240,7 +240,7 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
           end
 
           it 'append [INSERIDO CRM GOLD]' do
-            expect(lead.description).to eq("Concessionária: REMAZA CENTRO - Código: 1034952 - Tipo: HDA - Motocicletas [INSERIDO CRM GOLD EVENTO: #{crm_event_code}]")
+            expect(lead.description).to eq("Concessionária: REMAZA CENTRO; Código: 1634313; Tipo: HDA - Motocicletas [INSERIDO CRM GOLD EVENTO: #{crm_event_code}]")
           end
         end
       end

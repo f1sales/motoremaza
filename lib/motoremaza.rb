@@ -32,7 +32,7 @@ module Motoremaza
         @lead.description = "#{@lead.description} #{NOT_INSERTED_CRM_GOLD}"
         lead_description = @lead.description
 
-        dealer_name = lead_description.match(/Concessionária: (.*) - Código/)
+        dealer_name = lead_description.match(/Concessionária: (.*?);/)
         return unless dealer_name
 
         dealer = parse_dealer(dealer_name)

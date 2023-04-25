@@ -23,10 +23,14 @@ module Motoremaza
 
         post_crm_gold
 
-        lead.source.name
+        source_name
       end
 
       private
+
+      def source_name
+        @lead.source.name
+      end
 
       def post_crm_gold
         @lead.description = "#{@lead.description} #{NOT_INSERTED_CRM_GOLD}"
@@ -70,7 +74,8 @@ module Motoremaza
           'Telefone' => customer.phone,
           'Observacao' => @lead.product.name,
           'CNPJ_Unidade' => dealer['CNPJ'],
-          'TipoInteresse' => 'Novos'
+          'TipoInteresse' => 'Novos',
+          'Origem' => source_name
         }
       end
 

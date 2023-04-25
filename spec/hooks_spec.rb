@@ -149,7 +149,8 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
             'Telefone' => customer.phone,
             'Observacao' => product.name,
             'CNPJ_Unidade' => '54267463003401',
-            'TipoInteresse' => 'Novos'
+            'TipoInteresse' => 'Novos',
+            'Origem' => 'myHonda'
           }.to_json
         end
 
@@ -205,7 +206,8 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
               'Telefone' => customer.phone,
               'Observacao' => product.name,
               'CNPJ_Unidade' => '54267463001549',
-              'TipoInteresse' => 'Novos'
+              'TipoInteresse' => 'Novos',
+              'Origem' => 'myHonda'
             }.to_json
           end
 
@@ -231,7 +233,8 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
               'Telefone' => customer.phone,
               'Observacao' => product.name,
               'CNPJ_Unidade' => '54267463003401',
-              'TipoInteresse' => 'Novos'
+              'TipoInteresse' => 'Novos',
+              'Origem' => 'myHonda'
             }.to_json
           end
 

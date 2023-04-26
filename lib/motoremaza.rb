@@ -23,13 +23,25 @@ module Motoremaza
 
         post_crm_gold
 
+        dealer = {}
+        dealer['CNPJ'] = integration_reference if source_name.downcase['webmotors']
+        post_lead(dealer) if source_name.downcase['webmotors']
+
         source_name
       end
 
       private
 
       def source_name
-        @lead.source.name
+        lead_source.name
+      end
+
+      def lead_source
+        @lead.source
+      end
+
+      def integration_reference
+        lead_source.integration.reference
       end
 
       def post_crm_gold

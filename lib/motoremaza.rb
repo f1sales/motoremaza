@@ -22,10 +22,7 @@ module Motoremaza
         return nil if unwanted_product
 
         post_crm_gold
-
-        dealer = {}
-        dealer['CNPJ'] = integration_reference if source_name.downcase['webmotors']
-        post_lead(dealer) if source_name.downcase['webmotors']
+        post_lead_webmotors if source_name.downcase['webmotors']
 
         source_name
       end
@@ -102,6 +99,12 @@ module Motoremaza
         crm_inserted_description = INSERTED_CRM_GOLD.gsub('event_code', crm_event_code)
         @lead.description = @lead.description.gsub(NOT_INSERTED_CRM_GOLD, '').strip
         @lead.description = "#{@lead.description} #{crm_inserted_description}"
+      end
+
+      def post_lead_webmotors
+        dealer = {}
+        dealer['CNPJ'] = integration_reference
+        post_lead(dealer)
       end
 
       def product_name

@@ -22,7 +22,7 @@ module Motoremaza
         return nil if unwanted_product
 
         post_crm_gold
-        post_lead_webmotors if source_name.downcase['webmotors']
+        post_lead_webmotors if source_name_down['webmotors']
 
         source_name
       end
@@ -31,6 +31,10 @@ module Motoremaza
 
       def source_name
         lead_source.name
+      end
+
+      def source_name_down
+        source_name.downcase
       end
 
       def lead_source
@@ -84,7 +88,7 @@ module Motoremaza
           'Observacao' => @lead.product.name,
           'CNPJ_Unidade' => dealer['CNPJ'],
           'TipoInteresse' => 'Novos',
-          'Origem' => source_name
+          'Origem' => source_name_gold
         }
       end
 
@@ -99,6 +103,16 @@ module Motoremaza
         crm_inserted_description = INSERTED_CRM_GOLD.gsub('event_code', crm_event_code)
         @lead.description = @lead.description.gsub(NOT_INSERTED_CRM_GOLD, '').strip
         @lead.description = "#{@lead.description} #{crm_inserted_description}"
+      end
+
+      def source_name_gold
+        return 'WEBMOTORS' if source_name_down['webmotors']
+        return 'MERCADO LIVRE' if source_name_down['mercado livre']
+        return 'OLX' if source_name_down['olx']
+        return 'RD STATION' if source_name_down['rd station']
+        return 'myHonda' if source_name_down['honda']
+
+        source_name
       end
 
       def post_lead_webmotors

@@ -394,7 +394,7 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
           'Observacao' => product.name,
           'CNPJ_Unidade' => '1234567890001',
           'TipoInteresse' => 'Novos',
-          'Origem' => 'Webmotors - TATUAPE'
+          'Origem' => 'WEBMOTORS'
         }.to_json
       end
 

@@ -155,8 +155,12 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
           }.to_json
         end
 
+        let(:error_message) do
+          'Evento aberto para o mesmo cliente em curto prazo de tempo, será permitido somente a cada 2160 minutos.'
+        end
+
         let(:failed_crm_gold) do
-          { 'erro' => true }.to_json
+          { 'erro' => true, 'mensagem' => error_message }.to_json
         end
 
         let(:crm_gold_request) do
@@ -171,12 +175,12 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
         before do
           crm_gold_request
           dealers_list_request
-          lead.description = 'Concessionária: REMAZA CENTRO - Código: 1034952 - Tipo: HDA - Motocicletas'
+          lead.description = 'Concessionária: REMAZA CENTRO; Código: 1034952; Tipo: HDA - Motocicletas'
           switch_source
         end
 
         it 'append [NAO INSERIDO CRM GOLD]' do
-          expect(lead.description).to eq('Concessionária: REMAZA CENTRO - Código: 1034952 - Tipo: HDA - Motocicletas [NAO INSERIDO CRM GOLD]')
+          expect(lead.description).to eq("Concessionária: REMAZA CENTRO; Código: 1034952; Tipo: HDA - Motocicletas [NAO INSERIDO CRM GOLD: #{error_message}]")
         end
       end
 
@@ -280,7 +284,7 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
       end
     end
 
-    context 'when descritption contain type Serviços' do
+    context 'when description contain type Serviços' do
       before { lead.description = 'Concessionária: REMAZA - Código: 1015699 - Tipo: CS - Serviços e Peças' }
 
       it 'return nil source' do

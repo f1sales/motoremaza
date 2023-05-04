@@ -42,77 +42,6 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
     let(:switch_source) { described_class.switch_source(lead) }
 
     context 'when a dealer name is detected' do
-      let(:dealers_list_json) do
-        {
-          'Empresas' => [
-            {
-              'RAZSOC' => 'PRIMARCA - SAO CAETANO',
-              'CNPJ' => '63078489000134'
-            },
-            {
-              'RAZSOC' => 'PRIMARCA - SAO MIGUEL',
-              'CNPJ' => '63078489001025'
-            },
-            {
-              'RAZSOC' => 'DAITAN - IBIRAPUERA',
-              'CNPJ' => '67375899000289'
-            },
-            {
-              'RAZSOC' => 'MOTO REMAZA - IBIRAPUERA',
-              'CNPJ' => '54267463000143'
-            },
-            {
-              'RAZSOC' => 'MOTO REMAZA - CENTRO',
-              'CNPJ' => '54267463003401'
-            },
-            {
-              'RAZSOC' => 'MOTO REMAZA - SANTANA',
-              'CNPJ' => '54267463001387'
-            },
-            {
-              'RAZSOC' => 'MOTO REMAZA - SAO BERNARDO',
-              'CNPJ' => '54267463001549'
-            },
-            {
-              'RAZSOC' => 'MOTO REMAZA - TATUAPE',
-              'CNPJ' => '54267463001620'
-            },
-            {
-              'RAZSOC' => 'MOTO REMAZA - BUTANTA',
-              'CNPJ' => '54267463001891'
-            },
-            {
-              'RAZSOC' => 'MOTO REMAZA - TABOAO',
-              'CNPJ' => '54267463002006'
-            },
-            {
-              'RAZSOC' => 'MOTO REMAZA - CARRAO',
-              'CNPJ' => '54267463002197'
-            },
-            {
-              'RAZSOC' => 'MOTO REMAZA - IPIRANGA',
-              'CNPJ' => '54267463002510'
-            },
-            {
-              'RAZSOC' => 'MOTO REMAZA - DIADEMA',
-              'CNPJ' => '54267463003088'
-            },
-            {
-              'RAZSOC' => 'MOTO REMAZA - ASSUNCAO',
-              'CNPJ' => '54267463003169'
-            },
-            {
-              'RAZSOC' => 'MOTO REMAZA - RUDGE RAMOS',
-              'CNPJ' => '54267463003240'
-            },
-            {
-              'RAZSOC' => 'MOTO REMAZA - PACAEMBU',
-              'CNPJ' => '54267463003320'
-            }
-          ]
-        }.to_json
-      end
-
       let(:crm_gold_url) { Faker::Internet.url }
       let(:dealers_list_url) { Faker::Internet.url }
       let(:crm_gold_id) { Faker::Crypto.md5 }
@@ -127,17 +56,6 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
           .to receive(:fetch)
           .with('CRM_GOLD_ID')
           .and_return(crm_gold_id)
-        allow(ENV)
-          .to receive(:fetch)
-          .with('DEALERS_LIST_URL')
-          .and_return(dealers_list_url)
-      end
-
-      let(:dealers_list_request) do
-        stub_request(
-          :get,
-          dealers_list_url
-        ).to_return(status: 200, body: dealers_list_json, headers: {})
       end
 
       context 'when post to CRM Gold is not sucessful' do
@@ -174,12 +92,11 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
 
         before do
           crm_gold_request
-          dealers_list_request
           lead.description = 'Concessionária: REMAZA CENTRO; Código: 1034952; Tipo: HDA - Motocicletas'
           switch_source
         end
 
-        it 'append [NAO INSERIDO CRM GOLD]' do
+        it 'append [NAO INSERIDO CRM GOLD: Error message]' do
           expect(lead.description).to eq("Concessionária: REMAZA CENTRO; Código: 1034952; Tipo: HDA - Motocicletas [NAO INSERIDO CRM GOLD: #{error_message}]")
         end
       end
@@ -197,7 +114,6 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
         context 'when dealership is SBC' do
           before do
             crm_gold_request
-            dealers_list_request
             lead.description = 'Concessionária: REMAZA SBC; Código: 1054953; Tipo: CNH - Consórcio Hond'
             switch_source
           end
@@ -224,7 +140,6 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
         context 'when dealership is found' do
           before do
             crm_gold_request
-            dealers_list_request
             lead.description = 'Concessionária: REMAZA CENTRO; Código: 1634313; Tipo: HDA - Motocicletas'
             switch_source
           end

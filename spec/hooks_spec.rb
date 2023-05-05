@@ -97,7 +97,7 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
         end
 
         it 'append [NAO INSERIDO CRM GOLD: Error message]' do
-          expect(lead.description).to eq("Concessionária: REMAZA CENTRO; Código: 1034952; Tipo: HDA - Motocicletas [NAO INSERIDO CRM GOLD: #{error_message}]")
+          expect(lead.description).to eq("Concessionária: REMAZA CENTRO; Código: 1034952; Tipo: HDA - Motocicletas [NAO INSERIDO CRM GOLD] Dealer: {\"RAZSOC\"=>\"MOTO REMAZA - CENTRO\", \"CNPJ\"=>\"54267463003401\": #{error_message}]")
         end
       end
 
@@ -163,7 +163,7 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
           end
 
           it 'append [INSERIDO CRM GOLD]' do
-            expect(lead.description).to eq("Concessionária: REMAZA CENTRO; Código: 1634313; Tipo: HDA - Motocicletas [INSERIDO CRM GOLD EVENTO: #{crm_event_code}]")
+            expect(lead.description).to eq("Concessionária: REMAZA CENTRO; Código: 1634313; Tipo: HDA - Motocicletas  Dealer: {\"RAZSOC\"=>\"MOTO REMAZA - CENTRO\", \"CNPJ\"=>\"54267463003401\"} [INSERIDO CRM GOLD EVENTO: #{crm_event_code}]")
           end
         end
       end

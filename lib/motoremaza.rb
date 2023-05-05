@@ -56,6 +56,7 @@ module Motoremaza
         end
 
         dealer = parse_dealer(dealer_name)
+        @lead.description = "#{@lead.description} Dealer: #{dealer}"
         post_lead(dealer)
       end
 

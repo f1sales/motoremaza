@@ -97,7 +97,7 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
         end
 
         it 'append [NAO INSERIDO CRM GOLD: Error message]' do
-          expect(lead.description).to eq("Concessionária: REMAZA CENTRO; Código: 1034952; Tipo: HDA - Motocicletas [NAO INSERIDO CRM GOLD] Dealer: {\"RAZSOC\"=>\"MOTO REMAZA - CENTRO\", \"CNPJ\"=>\"54267463003401\": #{error_message}]")
+          expect(lead.description).to eq("Concessionária: REMAZA CENTRO; Código: 1034952; Tipo: HDA - Motocicletas [NAO INSERIDO CRM GOLD] Lead Payload: {\"idLead\"=>\"#{lead.id}\", \"idCRM\"=>\"#{crm_gold_id}\", \"Nome\"=>\"#{customer.name}\", \"Email\"=>\"#{customer.email}\", \"Telefone\"=>\"#{customer.phone}\", \"Observacao\"=>\"#{product.name}\", \"CNPJ_Unidade\"=>\"54267463003401\", \"TipoInteresse\"=>\"Novos\", \"Origem\"=>\"myHonda\": #{error_message}]")
         end
       end
 
@@ -163,7 +163,7 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
           end
 
           it 'append [INSERIDO CRM GOLD]' do
-            expect(lead.description).to eq("Concessionária: REMAZA CENTRO; Código: 1634313; Tipo: HDA - Motocicletas  Dealer: {\"RAZSOC\"=>\"MOTO REMAZA - CENTRO\", \"CNPJ\"=>\"54267463003401\"} [INSERIDO CRM GOLD EVENTO: #{crm_event_code}]")
+            expect(lead.description).to eq("Concessionária: REMAZA CENTRO; Código: 1634313; Tipo: HDA - Motocicletas  Lead Payload: {\"idLead\"=>\"#{lead.id}\", \"idCRM\"=>\"#{crm_gold_id}\", \"Nome\"=>\"#{customer.name}\", \"Email\"=>\"#{customer.email}\", \"Telefone\"=>\"#{customer.phone}\", \"Observacao\"=>\"#{product.name}\", \"CNPJ_Unidade\"=>\"54267463003401\", \"TipoInteresse\"=>\"Novos\", \"Origem\"=>\"myHonda\"} Error: 200 Mensagem: [INSERIDO CRM GOLD EVENTO: #{crm_event_code}]")
           end
         end
       end
@@ -338,7 +338,7 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
       end
 
       it 'append [INSERIDO CRM GOLD]' do
-        expect(lead.description).to eq("Valor: 10800 Ano: 2019  - dealer_name = nil|| [INSERIDO CRM GOLD EVENTO: #{crm_event_code}]")
+        expect(lead.description).to eq("Valor: 10800 Ano: 2019  - dealer_name = nil|| Lead Payload: {\"idLead\"=>\"#{lead.id}\", \"idCRM\"=>\"#{crm_gold_id}\", \"Nome\"=>\"#{customer.name}\", \"Email\"=>\"#{customer.email}\", \"Telefone\"=>\"#{customer.phone}\", \"Observacao\"=>\"#{product.name}\", \"CNPJ_Unidade\"=>\"1234567890001\", \"TipoInteresse\"=>\"Novos\", \"Origem\"=>\"WEBMOTORS\"} Error: 200 Mensagem: [INSERIDO CRM GOLD EVENTO: #{crm_event_code}]")
       end
     end
   end

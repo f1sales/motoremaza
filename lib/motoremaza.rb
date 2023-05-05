@@ -56,7 +56,6 @@ module Motoremaza
         end
 
         dealer = parse_dealer(dealer_name)
-        @lead.description = "#{@lead.description} Dealer: #{dealer}"
         post_lead(dealer)
       end
 
@@ -73,6 +72,7 @@ module Motoremaza
       def post_lead(dealer)
         customer = @lead.customer
         lead_payload = crm_gold_payload(customer, dealer)
+        @lead.description = "#{@lead.description} Lead Payload: #{lead_payload}"
         response = HTTP.post(
           ENV.fetch('CRM_GOLD_URL'),
           json: lead_payload
@@ -101,6 +101,7 @@ module Motoremaza
           @lead.description = "#{@lead.description[0..-2]}: #{response_body['mensagem']}]"
           return
         end
+        @lead.description = "#{@lead.description} Error: #{response.code} Mensagem: #{response_body['mensagem']}"
 
         update_description(response_body['codEvento'].to_s)
       end

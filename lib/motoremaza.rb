@@ -50,7 +50,10 @@ module Motoremaza
         lead_description = @lead.description
 
         dealer_name = lead_description.match(/Concessionária: (.*?);/)
-        return unless dealer_name
+        unless dealer_name
+          @lead.description = "#{@lead.description} - dealer_name = nil|#{dealer_name}|"
+          return
+        end
 
         dealer = parse_dealer(dealer_name)
         post_lead(dealer)

@@ -338,7 +338,7 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
       end
 
       it 'append [INSERIDO CRM GOLD]' do
-        expect(lead.description).to eq("Valor: 10800 Ano: 2019 [INSERIDO CRM GOLD EVENTO: #{crm_event_code}]")
+        expect(lead.description).to eq("Valor: 10800 Ano: 2019  - dealer_name = nil|| [INSERIDO CRM GOLD EVENTO: #{crm_event_code}]")
       end
     end
   end

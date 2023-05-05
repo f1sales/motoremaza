@@ -97,11 +97,11 @@ module Motoremaza
 
       def handle_response(response)
         response_body = JSON.parse(response.body)
+        @lead.description = "#{@lead.description} Error: #{response.code} Mensagem: #{response_body['mensagem']}"
         unless response.code == 200 && response_body['erro'] == false
           @lead.description = "#{@lead.description[0..-2]}: #{response_body['mensagem']}]"
           return
         end
-        @lead.description = "#{@lead.description} Error: #{response.code} Mensagem: #{response_body['mensagem']}"
 
         update_description(response_body['codEvento'].to_s)
       end

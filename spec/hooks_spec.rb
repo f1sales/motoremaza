@@ -97,7 +97,7 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
         end
 
         it 'append [NAO INSERIDO CRM GOLD: Error message]' do
-          expect(lead.description).to eq("Concessionária: REMAZA CENTRO; Código: 1034952; Tipo: HDA - Motocicletas [NAO INSERIDO CRM GOLD] Lead Payload: {\"idLead\"=>\"#{lead.id}\", \"idCRM\"=>\"#{crm_gold_id}\", \"Nome\"=>\"#{customer.name}\", \"Email\"=>\"#{customer.email}\", \"Telefone\"=>\"#{customer.phone}\", \"Observacao\"=>\"#{product.name}\", \"CNPJ_Unidade\"=>\"54267463003401\", \"TipoInteresse\"=>\"Novos\", \"Origem\"=>\"myHonda\": #{error_message}]")
+          expect(lead.description).to eq("Concessionária: REMAZA CENTRO; Código: 1034952; Tipo: HDA - Motocicletas [NAO INSERIDO CRM GOLD] Lead Payload: {\"idLead\"=>\"#{lead.id}\", \"idCRM\"=>\"#{crm_gold_id}\", \"Nome\"=>\"#{customer.name}\", \"Email\"=>\"#{customer.email}\", \"Telefone\"=>\"#{customer.phone}\", \"Observacao\"=>\"#{product.name}\", \"CNPJ_Unidade\"=>\"54267463003401\", \"TipoInteresse\"=>\"Novos\", \"Origem\"=>\"myHonda\"} Error: 200 Mensagem: #{error_message[0..-2]}: #{error_message}]")
         end
       end
 

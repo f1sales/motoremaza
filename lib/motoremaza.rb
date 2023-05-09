@@ -23,6 +23,7 @@ module Motoremaza
 
         post_crm_gold
         post_lead_webmotors if source_name_down['webmotors']
+        post_lead_rd_station if source_name_down['rd station']
 
         source_name
       end
@@ -45,15 +46,18 @@ module Motoremaza
         lead_source.integration.reference
       end
 
+      def lead_description
+        @lead.description
+      end
+
+      def lead_message
+        @lead.message
+      end
+
       def post_crm_gold
         @lead.description = "#{@lead.description} #{NOT_INSERTED_CRM_GOLD}"
-        lead_description = @lead.description
-
         dealer_name = lead_description.match(/Concessionária: (.*?);/)
-        unless dealer_name
-          @lead.description = "#{@lead.description} - dealer_name = nil|#{dealer_name}|"
-          return
-        end
+        return unless dealer_name
 
         dealer = parse_dealer(dealer_name)
         post_lead(dealer)
@@ -126,6 +130,14 @@ module Motoremaza
         dealer = {}
         dealer['CNPJ'] = integration_reference
         post_lead(dealer)
+      end
+
+      def post_lead_rd_station
+        dealer_name = lead_message.split(': ').last
+        dealer_name = 'MOTO REMAZA - ASSUNCAO' if dealer_name['ASSUNCAO']
+
+        dealer_store = dealers_list.detect { |dealer| dealer_name == dealer['RAZSOC'] }
+        post_lead(dealer_store)
       end
 
       def product_name

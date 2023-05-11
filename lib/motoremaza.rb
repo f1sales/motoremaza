@@ -81,13 +81,13 @@ module Motoremaza
         customer = @lead.customer
         lead_payload = crm_gold_payload(customer, dealer)
         @lead.description = "#{@lead.description} Lead Payload: #{lead_payload}"
-        logger.info "=== START REQUEST for Lead #{@lead.id} ==="
+        logger.warn "=== START REQUEST for Lead #{@lead.id} ==="
         response = HTTP.post(
           ENV.fetch('CRM_GOLD_URL'),
           json: lead_payload
         )
-        logger.info "=== REQUEST END for Lead #{@lead.id} ==="
-        logger.info "=== REPONSE #{response} ==="
+        logger.warn "=== REQUEST END for Lead #{@lead.id} ==="
+        logger.warn "=== REPONSE #{response} ==="
 
         @lead.message = "#{lead_message} - Resp: #{response} - Parse: #{JSON.parse(response.body)}"
 

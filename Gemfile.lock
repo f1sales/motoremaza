@@ -22,7 +22,7 @@ GIT
 PATH
   remote: .
   specs:
-    motoremaza (0.2.3)
+    motoremaza (0.2.4)
 
 GEM
   remote: https://rubygems.org/

@@ -74,10 +74,17 @@ module Motoremaza
         end
       end
 
-      def post_lead(dealer)
+      def logger
+        @logger ||= setup_logger
+      end
+
+      def setup_logger
         logger = Logger.new($stdout)
         logger.level = Logger::WARN
+        logger
+      end
 
+      def post_lead(dealer)
         customer = @lead.customer
         lead_payload = crm_gold_payload(customer, dealer)
         @lead.description = "#{@lead.description} Lead Payload: #{lead_payload}"
@@ -90,6 +97,7 @@ module Motoremaza
         logger.warn "=== REPONSE #{response} ==="
 
         @lead.message = "#{lead_message} - Resp: #{response} - Parse: #{JSON.parse(response.body)}"
+        logger.warn "=== LEAD MESSAGE #{@lead.message} ==="
 
         handle_response(response)
       end
@@ -110,12 +118,15 @@ module Motoremaza
 
       def handle_response(response)
         response_body = JSON.parse(response.body)
+        logger.warn "=== response_body #{response_body} ==="
         @lead.description = "#{@lead.description} Error: #{response.code} Mensagem: #{response_body['mensagem']}"
+        logger.warn "=== lead.description #{@lead.description} ==="
 
         unless response.code == 200 && response_body['erro'] == false
           @lead.description = "#{@lead.description[0..-2]}: #{response_body['mensagem']}]"
           return
         end
+        logger.warn "=== update_description #{response_body['codEvento']} ==="
 
         update_description(response_body['codEvento'].to_s)
       end

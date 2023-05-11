@@ -4,6 +4,7 @@ require_relative 'motoremaza/version'
 require 'f1sales_custom/parser'
 require 'f1sales_custom/source'
 require 'f1sales_custom/hooks'
+require 'logger'
 
 module Motoremaza
   class Error < StandardError; end
@@ -74,13 +75,19 @@ module Motoremaza
       end
 
       def post_lead(dealer)
+        logger = Logger.new($stdout)
+        logger.level = Logger::WARN
+
         customer = @lead.customer
         lead_payload = crm_gold_payload(customer, dealer)
         @lead.description = "#{@lead.description} Lead Payload: #{lead_payload}"
+        logger.info "=== START REQUEST for Lead #{@lead.id} ==="
         response = HTTP.post(
           ENV.fetch('CRM_GOLD_URL'),
           json: lead_payload
         )
+        logger.info "=== REQUEST END for Lead #{@lead.id} ==="
+        logger.info "=== REPONSE #{response} ==="
 
         @lead.message = "#{lead_message} - Resp: #{response} - Parse: #{JSON.parse(response.body)}"
 

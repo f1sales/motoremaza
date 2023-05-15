@@ -97,7 +97,7 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
         end
 
         it 'append [NAO INSERIDO CRM GOLD: Error message]' do
-          expect(lead.description).to eq("Concessionária: REMAZA CENTRO; Código: 1034952; Tipo: HDA - Motocicletas [NAO INSERIDO CRM GOLD] Lead Payload: {\"idLead\"=>\"#{lead.id}\", \"idCRM\"=>\"#{crm_gold_id}\", \"Nome\"=>\"#{customer.name}\", \"Email\"=>\"#{customer.email}\", \"Telefone\"=>\"#{customer.phone}\", \"Observacao\"=>\"#{product.name}\", \"CNPJ_Unidade\"=>\"54267463003401\", \"TipoInteresse\"=>\"Novos\", \"Origem\"=>\"myHonda\"} Error: 200 Mensagem: #{error_message[0..-2]}: #{error_message}]")
+          expect(lead.description).to eq("Concessionária: REMAZA CENTRO; Código: 1034952; Tipo: HDA - Motocicletas [CRM GOLD ERRO: #{error_message}]")
         end
       end
 
@@ -163,7 +163,7 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
           end
 
           it 'append [INSERIDO CRM GOLD]' do
-            expect(lead.description).to eq("Concessionária: REMAZA CENTRO; Código: 1634313; Tipo: HDA - Motocicletas  Lead Payload: {\"idLead\"=>\"#{lead.id}\", \"idCRM\"=>\"#{crm_gold_id}\", \"Nome\"=>\"#{customer.name}\", \"Email\"=>\"#{customer.email}\", \"Telefone\"=>\"#{customer.phone}\", \"Observacao\"=>\"#{product.name}\", \"CNPJ_Unidade\"=>\"54267463003401\", \"TipoInteresse\"=>\"Novos\", \"Origem\"=>\"myHonda\"} Error: 200 Mensagem: [INSERIDO CRM GOLD EVENTO: #{crm_event_code}]")
+            expect(lead.description).to eq("Concessionária: REMAZA CENTRO; Código: 1634313; Tipo: HDA - Motocicletas [INSERIDO CRM GOLD EVENTO: #{crm_event_code}]")
           end
         end
       end
@@ -309,7 +309,7 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
       end
 
       it 'append [INSERIDO CRM GOLD]' do
-        expect(lead.description).to eq("Valor: 10800 Ano: 2019  Lead Payload: {\"idLead\"=>\"#{lead.id}\", \"idCRM\"=>\"#{crm_gold_id}\", \"Nome\"=>\"#{customer.name}\", \"Email\"=>\"#{customer.email}\", \"Telefone\"=>\"#{customer.phone}\", \"Observacao\"=>\"#{product.name}\", \"CNPJ_Unidade\"=>\"1234567890001\", \"TipoInteresse\"=>\"Novos\", \"Origem\"=>\"WEBMOTORS\"} Error: 200 Mensagem: [INSERIDO CRM GOLD EVENTO: #{crm_event_code}]")
+        expect(lead.description).to eq("Valor: 10800 Ano: 2019 [INSERIDO CRM GOLD EVENTO: #{crm_event_code}]")
       end
     end
   end
@@ -375,7 +375,7 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
         end
 
         it 'append [INSERIDO CRM GOLD]' do
-          expect(lead.description).to eq("Lead Payload: {\"idLead\"=>\"#{lead.id}\", \"idCRM\"=>\"#{crm_gold_id}\", \"Nome\"=>\"#{customer.name}\", \"Email\"=>\"#{customer.email}\", \"Telefone\"=>\"#{customer.phone}\", \"Observacao\"=>\"#{product.name}\", \"CNPJ_Unidade\"=>\"54267463001620\", \"TipoInteresse\"=>\"Novos\", \"Origem\"=>\"RD STATION\"} Error: 200 Mensagem: [INSERIDO CRM GOLD EVENTO: #{crm_event_code}]")
+          expect(lead.description).to eq(" [INSERIDO CRM GOLD EVENTO: #{crm_event_code}]")
         end
       end
     end
@@ -434,7 +434,7 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
         end
 
         it 'append [INSERIDO CRM GOLD]' do
-          expect(lead.description).to eq("Lead Payload: {\"idLead\"=>\"#{lead.id}\", \"idCRM\"=>\"#{crm_gold_id}\", \"Nome\"=>\"#{customer.name}\", \"Email\"=>\"#{customer.email}\", \"Telefone\"=>\"#{customer.phone}\", \"Observacao\"=>\"#{product.name}\", \"CNPJ_Unidade\"=>\"54267463001549\", \"TipoInteresse\"=>\"Novos\", \"Origem\"=>\"RD STATION\"} Error: 200 Mensagem: [INSERIDO CRM GOLD EVENTO: #{crm_event_code}]")
+          expect(lead.description).to eq(" [INSERIDO CRM GOLD EVENTO: #{crm_event_code}]")
         end
       end
     end
@@ -493,7 +493,7 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
         end
 
         it 'append [INSERIDO CRM GOLD]' do
-          expect(lead.description).to eq("Lead Payload: {\"idLead\"=>\"#{lead.id}\", \"idCRM\"=>\"#{crm_gold_id}\", \"Nome\"=>\"#{customer.name}\", \"Email\"=>\"#{customer.email}\", \"Telefone\"=>\"#{customer.phone}\", \"Observacao\"=>\"#{product.name}\", \"CNPJ_Unidade\"=>\"54267463003169\", \"TipoInteresse\"=>\"Novos\", \"Origem\"=>\"RD STATION\"} Error: 200 Mensagem: [INSERIDO CRM GOLD EVENTO: #{crm_event_code}]")
+          expect(lead.description).to eq(" [INSERIDO CRM GOLD EVENTO: #{crm_event_code}]")
         end
       end
     end

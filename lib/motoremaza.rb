@@ -4,7 +4,6 @@ require_relative 'motoremaza/version'
 require 'f1sales_custom/parser'
 require 'f1sales_custom/source'
 require 'f1sales_custom/hooks'
-require 'logger'
 
 module Motoremaza
   class Error < StandardError; end
@@ -47,17 +46,13 @@ module Motoremaza
         lead_source.integration.reference
       end
 
-      def lead_description
-        @lead.description
-      end
-
       def lead_message
         @lead.message
       end
 
       def post_crm_gold
-        @lead.description = "#{@lead.description} #{NOT_INSERTED_CRM_GOLD}"
-        dealer_name = lead_description.match(/Concessionária: (.*?);/)
+        @updated_description = "#{@lead.description} #{NOT_INSERTED_CRM_GOLD}"
+        dealer_name = @lead.description.match(/Concessionária: (.*?);/)
         return unless dealer_name
 
         dealer = parse_dealer(dealer_name)
@@ -74,31 +69,10 @@ module Motoremaza
         end
       end
 
-      def logger
-        @logger ||= setup_logger
-      end
-
-      def setup_logger
-        logger = Logger.new($stdout)
-        logger.level = Logger::WARN
-        logger
-      end
-
       def post_lead(dealer)
         customer = @lead.customer
         lead_payload = crm_gold_payload(customer, dealer)
-        @lead.description = "#{@lead.description} Lead Payload: #{lead_payload}"
-        logger.warn "=== START REQUEST for Lead #{@lead.id} ==="
-        response = HTTP.post(
-          ENV.fetch('CRM_GOLD_URL'),
-          json: lead_payload
-        )
-        logger.warn "=== REQUEST END for Lead #{@lead.id} ==="
-        logger.warn "=== REPONSE #{response} ==="
-
-        @lead.message = "#{lead_message} - Resp: #{response} - Parse: #{JSON.parse(response.body)}"
-        logger.warn "=== LEAD MESSAGE #{@lead.message} ==="
-
+        response = HTTP.post(ENV.fetch('CRM_GOLD_URL'), json: lead_payload)
         handle_response(response)
       end
 
@@ -118,23 +92,17 @@ module Motoremaza
 
       def handle_response(response)
         response_body = JSON.parse(response.body)
-        logger.warn "=== response_body #{response_body} ==="
-        @lead.description = "#{@lead.description} Error: #{response.code} Mensagem: #{response_body['mensagem']}"
-        logger.warn "=== lead.description #{@lead.description} ==="
-
-        unless response.code == 200 && response_body['erro'] == false
-          @lead.description = "#{@lead.description[0..-2]}: #{response_body['mensagem']}]"
-          return
+        if response_body['erro'] == true
+          @lead.description += " [CRM GOLD ERRO: #{response_body['mensagem']}]"
+        else
+          update_description(response_body['codEvento'].to_s)
         end
-        logger.warn "=== update_description #{response_body['codEvento']} ==="
-
-        update_description(response_body['codEvento'].to_s)
       end
 
       def update_description(crm_event_code)
         crm_inserted_description = INSERTED_CRM_GOLD.gsub('event_code', crm_event_code)
-        @lead.description = @lead.description.gsub(NOT_INSERTED_CRM_GOLD, '').strip
-        @lead.description = "#{@lead.description} #{crm_inserted_description}"
+        @updated_description = @updated_description.gsub(NOT_INSERTED_CRM_GOLD, '').strip
+        @lead.description = "#{@updated_description} #{crm_inserted_description}"
       end
 
       def source_name_gold

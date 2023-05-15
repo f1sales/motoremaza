@@ -4,6 +4,20 @@ require 'webmock/rspec'
 require 'byebug'
 
 RSpec.describe F1SalesCustom::Hooks::Lead do
+  let(:crm_gold_url) { Faker::Internet.url }
+  let(:crm_gold_id) { Faker::Crypto.md5 }
+
+  before do
+    allow(ENV)
+      .to receive(:fetch)
+      .with('CRM_GOLD_URL')
+      .and_return(crm_gold_url)
+    allow(ENV)
+      .to receive(:fetch)
+      .with('CRM_GOLD_ID')
+      .and_return(crm_gold_id)
+  end
+
   let(:lead) do
     lead = OpenStruct.new
     lead.source = source
@@ -39,24 +53,49 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
   end
 
   let(:switch_source) { described_class.switch_source(lead) }
+  let(:switch_salesman) { described_class.switch_salesman(lead) }
+
+  context 'when remaza responds with lead salesman' do
+    let(:salesman) do
+      info = OpenStruct.new
+      info.name = Faker::Name.name
+      info.email = Faker::Internet.email
+      info
+    end
+
+    let(:crm_gold_salesman) do
+      {
+        'NOME' => salesman.name,
+        'EMAIL' => salesman.email,
+        'erro' => false,
+        'mensagem' => 'Consulta realizada com sucesso'
+      }
+    end
+
+    let!(:crm_gold_request) do
+      stub_request(
+        :get,
+        "#{crm_gold_url}/Consultar"
+      ).with(
+        body: "{\"idLead\":\"#{lead.id}\",  \"idCRM\":\"#{crm_gold_id}\"}",
+        headers: {
+          'Connection' => 'close',
+          'Content-Type' => 'application/json',
+          'host' => URI(crm_gold_url).host,
+          'User-Agent' => 'http.rb/5.1.1'
+        }
+      ).to_return(status: 200, body: crm_gold_salesman.to_json, headers: {})
+    end
+
+    it 'returns salesman query with returned emaol' do
+      expect(switch_salesman).to eq({ email: salesman.email })
+    end
+  end
 
   context 'when come from myHonda' do
     context 'when a dealer name is detected' do
-      let(:crm_gold_url) { Faker::Internet.url }
       let(:dealers_list_url) { Faker::Internet.url }
-      let(:crm_gold_id) { Faker::Crypto.md5 }
       let(:crm_event_code) { Faker::Number.number(digits: 5) }
-
-      before do
-        allow(ENV)
-          .to receive(:fetch)
-          .with('CRM_GOLD_URL')
-          .and_return(crm_gold_url)
-        allow(ENV)
-          .to receive(:fetch)
-          .with('CRM_GOLD_ID')
-          .and_return(crm_gold_id)
-      end
 
       context 'when post to CRM Gold is not sucessful' do
         let(:lead_json) do

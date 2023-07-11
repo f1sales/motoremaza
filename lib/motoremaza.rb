@@ -13,19 +13,6 @@ module Motoremaza
       INSERTED_CRM_GOLD = '[INSERIDO CRM GOLD EVENTO: event_code]'
       NOT_INSERTED_CRM_GOLD = '[NAO INSERIDO CRM GOLD]'
 
-      def switch_salesman(lead)
-        response = HTTP.get(
-          "#{ENV.fetch('CRM_GOLD_URL')}/Consultar",
-          headers: { 'Content-Type' => 'application/json' },
-          body: "{\"idLead\":\"#{lead.id}\",  \"idCRM\":\"#{ENV.fetch('CRM_GOLD_ID')}\"}"
-        )
-
-        response_body = JSON.parse(response.body)
-        return nil if response_body['erro'] == true
-
-        { email: response_body['EMAIL'] }
-      end
-
       def switch_source(lead)
         @lead = lead
         return nil unless lead.attachments.empty?

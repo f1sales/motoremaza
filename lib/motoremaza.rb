@@ -15,7 +15,7 @@ module Motoremaza
 
       def switch_source(lead)
         @lead = lead
-        return nil unless lead.attachments.empty?
+        # return nil unless lead.attachments.empty?
 
         return nil if unwanted_description
 

@@ -58,47 +58,66 @@ RSpec.describe F1SalesCustom::Hooks::Lead do
     context 'when a dealer name is detected' do
       let(:dealers_list_url) { Faker::Internet.url }
       let(:crm_event_code) { Faker::Number.number(digits: 5) }
+      let(:lead_json) do
+        {
+          'idLead' => lead.id,
+          'idCRM' => crm_gold_id,
+          'Nome' => customer.name,
+          'Email' => customer.email,
+          'Telefone' => customer.phone,
+          'Observacao' => product.name,
+          'CNPJ_Unidade' => '54267463003401',
+          'TipoInteresse' => 'Novos',
+          'Origem' => 'myHonda'
+        }.to_json
+      end
+
+      let(:crm_gold_request) do
+        stub_request(
+          :post,
+          crm_gold_url
+        ).with(
+          body: lead_json
+        ).to_return(status: 200, body: failed_crm_gold, headers: {})
+      end
 
       context 'when post to CRM Gold is not sucessful' do
-        let(:lead_json) do
-          {
-            'idLead' => lead.id,
-            'idCRM' => crm_gold_id,
-            'Nome' => customer.name,
-            'Email' => customer.email,
-            'Telefone' => customer.phone,
-            'Observacao' => product.name,
-            'CNPJ_Unidade' => '54267463003401',
-            'TipoInteresse' => 'Novos',
-            'Origem' => 'myHonda'
-          }.to_json
+        context 'when returned payload is cannot be parsed' do
+          let(:failed_crm_gold) do
+            ''
+          end
+
+          before do
+            crm_gold_request
+            lead.description = 'Concessionária: REMAZA CENTRO; Código: 1034952; Tipo: HDA - Motocicletas'
+            switch_source
+          end
+
+          it 'append [NAO INSERIDO CRM GOLD: Error message]' do
+            message = 'Concessionária: REMAZA CENTRO; Código: 1034952; Tipo: HDA - '
+            message += 'Motocicletas [CRM GOLD ERRO SEM RESPOSTA: ]'
+            expect(lead.description).to eq(message)
+          end
         end
 
-        let(:error_message) do
-          'Evento aberto para o mesmo cliente em curto prazo de tempo, será permitido somente a cada 2160 minutos.'
-        end
+        context 'when returned payload is an error message' do
+          let(:error_message) do
+            'Evento aberto para o mesmo cliente em curto prazo de tempo, será permitido somente a cada 2160 minutos.'
+          end
 
-        let(:failed_crm_gold) do
-          { 'erro' => true, 'mensagem' => error_message }.to_json
-        end
+          let(:failed_crm_gold) do
+            { 'erro' => true, 'mensagem' => error_message }.to_json
+          end
 
-        let(:crm_gold_request) do
-          stub_request(
-            :post,
-            crm_gold_url
-          ).with(
-            body: lead_json
-          ).to_return(status: 200, body: failed_crm_gold, headers: {})
-        end
+          before do
+            crm_gold_request
+            lead.description = 'Concessionária: REMAZA CENTRO; Código: 1034952; Tipo: HDA - Motocicletas'
+            switch_source
+          end
 
-        before do
-          crm_gold_request
-          lead.description = 'Concessionária: REMAZA CENTRO; Código: 1034952; Tipo: HDA - Motocicletas'
-          switch_source
-        end
-
-        it 'append [NAO INSERIDO CRM GOLD: Error message]' do
-          expect(lead.description).to eq("Concessionária: REMAZA CENTRO; Código: 1034952; Tipo: HDA - Motocicletas [CRM GOLD ERRO: #{error_message}]")
+          it 'append [NAO INSERIDO CRM GOLD: Error message]' do
+            expect(lead.description).to eq("Concessionária: REMAZA CENTRO; Código: 1034952; Tipo: HDA - Motocicletas [CRM GOLD ERRO: #{error_message}]")
+          end
         end
       end
 

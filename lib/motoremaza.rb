@@ -91,7 +91,13 @@ module Motoremaza
       end
 
       def handle_response(response)
-        response_body = JSON.parse(response.body)
+        begin
+          response_body = JSON.parse(response.body)
+        rescue JSON::ParserError
+          @lead.description += " [CRM GOLD ERRO SEM RESPOSTA: #{response.body}]"
+          return
+        end
+
         if response_body['erro'] == true
           @lead.description += " [CRM GOLD ERRO: #{response_body['mensagem']}]"
         else
